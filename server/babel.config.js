@@ -8,7 +8,13 @@ module.exports = {
     ["@babel/plugin-proposal-decorators", { legacy: true }],
     ["@babel/plugin-proposal-class-properties", { loose: false }],
     [
-      "module-resolver", { alias: {
+      "module-resolver", { alias: { 
+        "@routes": "./src/routes",
+        "@middlewares": "./src/middlewares",
+        "@infra": "./src/infra",
+        "@handlers": "./src/handlers",
+        "@config": "./src/config",
+        "@helpers": "./src/helpers",
       }}
     ],
   ],

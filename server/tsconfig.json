@@ -25,6 +25,12 @@
     
     "baseUrl": ".",
     "paths": {
+      "@routes/*": ["./src/routes/*"],
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@infra/*": ["./src/infra/*"],
+      "@handlers/*": ["./src/handlers/*"],
+      "@config/*": ["./src/config/*"],
+      "@helpers/*": ["./src/helpers/*"]
     }
   }
 }

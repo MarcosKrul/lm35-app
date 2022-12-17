@@ -15,6 +15,7 @@ module.exports = {
         "@handlers": "./src/handlers",
         "@config": "./src/config",
         "@helpers": "./src/helpers",
+        "@models": "./src/models",
       }}
     ],
   ],

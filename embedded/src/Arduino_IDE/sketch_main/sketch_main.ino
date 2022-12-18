@@ -1,8 +1,8 @@
 #include <PubSubClient.h>
 #include <WiFiConnection.h>
 
-#define WIFI_SSID "WIFI_SSID_HERE"
-#define WIFI_PASSWORD "WIFI_PASSWORD_HERE"
+#define MQTT_PIN_LED_FEEDBACK 4
+#define WIFI_PIN_LED_FEEDBACK 5
 
 #define MQTT_PORT MQTT_PORT_HERE
 #define MQTT_HOST "MQTT_HOST_HERE"
@@ -23,6 +23,9 @@ void setup() {
 	Serial.begin(9600);
 	randomSeed(analogRead(A0));
 
+	pinMode(WIFI_PIN_LED_FEEDBACK, OUTPUT);
+	pinMode(MQTT_PIN_LED_FEEDBACK, OUTPUT);
+
 	mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   mqttClient.setCallback(onMQTTMessageCallback);
 }
@@ -41,6 +44,9 @@ void loop() {
   
 	mqttClient.loop();
 	wiFiConnection.printStatus();
+
+	digitalWrite(MQTT_PIN_LED_FEEDBACK, mqttClient.connected());
+	digitalWrite(WIFI_PIN_LED_FEEDBACK, wiFiConnection.connected());
 
 	delay(50);
 }

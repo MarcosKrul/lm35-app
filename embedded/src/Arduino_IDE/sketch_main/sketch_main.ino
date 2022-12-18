@@ -7,9 +7,9 @@
 #define MQTT_PORT MQTT_PORT_HERE
 #define MQTT_HOST "MQTT_HOST_HERE"
 #define MQTT_SECRET_HASH "MQTT_SECRET_HASH_HERE"
+#define MQTT_MAX_LM35_JSON_LENGTH 50
 
-void connectionsStatus();
-const char* getJSONToPublish();
+void publishLM35Json();
 void onMQTTMessageCallback(char*,byte*,unsigned int);
 
 float tempConverted = -1;
@@ -36,11 +36,7 @@ void loop() {
 	else 
 		if (!mqttClient.connected())
 			mqttClient.connect("__MQTTClientId LM35-app" + random(300));
-		else 
-			mqttClient.publish(
-				"/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/diffusion", 
-				getJSONToPublish()
-			);
+		else publishLM35Json(); 
   
 	mqttClient.loop();
 	wiFiConnection.printStatus();
@@ -51,8 +47,22 @@ void loop() {
 	delay(50);
 }
 
-const char* getJSONToPublish() {
-	return "{\"temp\":\"10\",\"analog\":\"10\"}";
+void publishLM35Json() {
+  char* buffer = (char*) malloc(MQTT_MAX_LM35_JSON_LENGTH * sizeof(char));
+
+  sprintf(
+    buffer,
+    "{\"temp\":\"%.2f\",\"analog\":\"%.2f\"}",
+    tempConverted,
+    analogReadFromLM35
+  );
+
+	mqttClient.publish(
+		"/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/diffusion", 
+		buffer
+	);
+
+  free(buffer);
 }
 
 void onMQTTMessageCallback(char* topic, byte* payload, unsigned int size) {

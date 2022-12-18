@@ -24,11 +24,14 @@ void setup() {
 }
 
 void loop() {
+	float temp = 25.6;
+
 	if (!wiFiConnection.connected()) wiFiConnection.reconnect();
-	else if (!mqttClient.connected()) {
-		mqttClient.connect("__MQTTClientId LM35-app" + random(300));
-		mqttClient.subscribe("/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/diffusion");
-	}
+	else 
+		if (!mqttClient.connected())
+			mqttClient.connect("__MQTTClientId LM35-app" + random(300));
+		else 
+			mqttClient.publish("/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/diffusion", "temp");
   
 	mqttClient.loop();
 	wiFiConnection.printStatus();

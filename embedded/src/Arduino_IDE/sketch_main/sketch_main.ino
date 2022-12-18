@@ -9,7 +9,11 @@
 #define MQTT_SECRET_HASH "MQTT_SECRET_HASH_HERE"
 
 void connectionsStatus();
+const char* getJSONToPublish();
 void onMQTTMessageCallback(char*,byte*,unsigned int);
+
+float tempConverted = -1;
+float analogReadFromLM35 = -1;
 
 WiFiClient wiFiClient;
 PubSubClient mqttClient(wiFiClient);
@@ -24,19 +28,25 @@ void setup() {
 }
 
 void loop() {
-	float temp = 25.6;
 
 	if (!wiFiConnection.connected()) wiFiConnection.reconnect();
 	else 
 		if (!mqttClient.connected())
 			mqttClient.connect("__MQTTClientId LM35-app" + random(300));
 		else 
-			mqttClient.publish("/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/diffusion", "temp");
+			mqttClient.publish(
+				"/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/diffusion", 
+				getJSONToPublish()
+			);
   
 	mqttClient.loop();
 	wiFiConnection.printStatus();
 
 	delay(50);
+}
+
+const char* getJSONToPublish() {
+	return "{\"temp\":\"10\",\"analog\":\"10\"}";
 }
 
 void onMQTTMessageCallback(char* topic, byte* payload, unsigned int size) {

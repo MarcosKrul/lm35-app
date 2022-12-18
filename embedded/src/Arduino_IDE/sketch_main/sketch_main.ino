@@ -1,6 +1,10 @@
 #include <PubSubClient.h>
 #include <WiFiConnection.h>
 
+#define ADC_RESOLUTION 10
+
+#define PIN_LM35 A0
+
 #define MQTT_PIN_LED_FEEDBACK 4
 #define WIFI_PIN_LED_FEEDBACK 5
 
@@ -8,6 +12,8 @@
 #define MQTT_HOST "MQTT_HOST_HERE"
 #define MQTT_SECRET_HASH "MQTT_SECRET_HASH_HERE"
 #define MQTT_MAX_LM35_JSON_LENGTH 50
+
+#define GET_CELSIUS_BY_RAW_VALUE(value) (value * 5.0 / (pow(2, ADC_RESOLUTION))-1) / 0.01
 
 void publishLM35Json();
 void onMQTTMessageCallback(char*,byte*,unsigned int);
@@ -23,6 +29,8 @@ void setup() {
 	Serial.begin(9600);
 	randomSeed(analogRead(A0));
 
+  pinMode(PIN_LM35, INPUT);
+  
 	pinMode(WIFI_PIN_LED_FEEDBACK, OUTPUT);
 	pinMode(MQTT_PIN_LED_FEEDBACK, OUTPUT);
 
@@ -31,6 +39,9 @@ void setup() {
 }
 
 void loop() {
+
+  analogReadFromLM35 = analogRead(PIN_LM35);
+	tempConverted = GET_CELSIUS_BY_RAW_VALUE(analogReadFromLM35);
 
 	if (!wiFiConnection.connected()) wiFiConnection.reconnect();
 	else 

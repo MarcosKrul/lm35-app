@@ -13,7 +13,7 @@
 #define MQTT_SECRET_HASH "MQTT_SECRET_HASH_HERE"
 #define MQTT_MAX_LM35_JSON_LENGTH 50
 
-#define GET_CELSIUS_BY_RAW_VALUE(value) (value * 5.0 / (pow(2, ADC_RESOLUTION))-1) / 0.01
+#define GET_CELSIUS_BY_RAW_VALUE(value) (value * 5.0 / (pow(2, ADC_RESOLUTION)-1)) / 0.01
 
 void publishLM35Json();
 void onMQTTMessageCallback(char*,byte*,unsigned int);

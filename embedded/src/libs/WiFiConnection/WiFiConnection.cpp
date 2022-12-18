@@ -7,19 +7,19 @@ WiFiConnection::WiFiConnection(char* ssid, char* password) {
 }
 
 void WiFiConnection::connect() {
-  WiFiConnection.begin(this->ssid, this->password);
+  WiFi.begin(this->ssid, this->password);
 }
 
 bool WiFiConnection::connected() {
-	return WiFiConnection.status() == WL_CONNECTED;
+	return WiFi.status() == WL_CONNECTED;
 }
 
 IPAddress WiFiConnection::getLocalIP() {
-	return WiFiConnection.localIP();
+	return WiFi.localIP();
 }
 
 String WiFiConnection::getMacAddress() {
-	return WiFiConnection.macAddress();
+	return WiFi.macAddress();
 }
 
 void WiFiConnection::printStatus() {

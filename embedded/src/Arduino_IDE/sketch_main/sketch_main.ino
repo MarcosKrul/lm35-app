@@ -99,8 +99,10 @@ void loop() {
 
 	if (!wiFiConnection.connected()) wiFiConnection.reconnect();
 	else 
-		if (!mqttClient.connected())
+		if (!mqttClient.connected()) {
 			mqttClient.connect("__MQTTClientId LM35-app" + random(300));
+			mqttClient.subscribe("/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/control/toggle");
+		}
 		else if (publish_lm35_data) publishLM35Json(); 
   
 	mqttClient.loop();
@@ -144,6 +146,9 @@ void publishLM35Json() {
 void onMQTTMessageCallback(char* topic, byte* payload, unsigned int size) {
   Serial.println("MQTT Client received message at: ");
   Serial.print(topic);
+
+	if (strcmp(topic, "/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/control/toggle") == 0)
+		publish_lm35_data = !publish_lm35_data;
 
   Serial.print(" / Message: ");
   for (int i = 0; i < size; i++) {

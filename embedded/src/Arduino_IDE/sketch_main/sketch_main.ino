@@ -15,6 +15,9 @@
 #define MQTT_MAX_LM35_JSON_LENGTH 50
 #define MQTT_LED_BLINK_TIME_IN_MS 1000
 
+#define MQTT_TOPIC_LM35_DATA "/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/diffusion"
+#define MQTT_TOPIC_CONTROL_TOGGLE "/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/control/toggle"
+
 #define LCD_RS 0
 #define LCD_DB4 13
 #define LCD_DB5 12
@@ -101,7 +104,7 @@ void loop() {
 	else 
 		if (!mqttClient.connected()) {
 			mqttClient.connect("__MQTTClientId LM35-app" + random(300));
-			mqttClient.subscribe("/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/control/toggle");
+			mqttClient.subscribe(MQTT_TOPIC_CONTROL_TOGGLE);
 		}
 		else if (publish_lm35_data) publishLM35Json(); 
   
@@ -135,10 +138,7 @@ void publishLM35Json() {
     analogReadFromLM35
   );
 
-	mqttClient.publish(
-		"/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/diffusion", 
-		buffer
-	);
+	mqttClient.publish(MQTT_TOPIC_LM35_DATA, buffer);
 
   free(buffer);
 }
@@ -147,7 +147,7 @@ void onMQTTMessageCallback(char* topic, byte* payload, unsigned int size) {
   Serial.println("MQTT Client received message at: ");
   Serial.print(topic);
 
-	if (strcmp(topic, "/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/control/toggle") == 0)
+	if (strcmp(topic, MQTT_TOPIC_CONTROL_TOGGLE) == 0)
 		publish_lm35_data = !publish_lm35_data;
 
   Serial.print(" / Message: ");

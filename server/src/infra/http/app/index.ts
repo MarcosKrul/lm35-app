@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import "express-async-errors";
+import "@containers/index";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";

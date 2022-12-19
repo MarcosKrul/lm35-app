@@ -17,6 +17,8 @@ module.exports = {
         "@helpers": "./src/helpers",
         "@models": "./src/models",
         "@common": "./src/common",
+        "@services": "./src/services",
+        "@containers": "./src/containers",
       }}
     ],
   ],

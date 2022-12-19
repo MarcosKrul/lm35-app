@@ -13,6 +13,7 @@
 #define MQTT_HOST "MQTT_HOST_HERE"
 #define MQTT_SECRET_HASH "MQTT_SECRET_HASH_HERE"
 #define MQTT_MAX_LM35_JSON_LENGTH 50
+#define MQTT_LED_BLINK_TIME_IN_MS 1000
 
 #define LCD_RS 0
 #define LCD_DB4 13
@@ -31,6 +32,9 @@ void onMQTTMessageCallback(char*,byte*,unsigned int);
 
 float tempConverted = -1;
 float analogReadFromLM35 = -1;
+byte publish_lm35_data = 1;
+byte last_state_blink_mqtt_led = 1;
+unsigned long last_millis_blink_mqtt_led = millis();
 const char* title_temp = "Temp: ";
 const char* title_analog = "Analog: ";
 
@@ -97,12 +101,23 @@ void loop() {
 	else 
 		if (!mqttClient.connected())
 			mqttClient.connect("__MQTTClientId LM35-app" + random(300));
-		else publishLM35Json(); 
+		else if (publish_lm35_data) publishLM35Json(); 
   
 	mqttClient.loop();
 	wiFiConnection.printStatus();
 
-	digitalWrite(MQTT_PIN_LED_FEEDBACK, mqttClient.connected());
+	if (!mqttClient.connected())
+		digitalWrite(MQTT_PIN_LED_FEEDBACK, LOW);
+	else if (publish_lm35_data) 
+		digitalWrite(MQTT_PIN_LED_FEEDBACK, HIGH);
+	else if (millis() > (last_millis_blink_mqtt_led + MQTT_LED_BLINK_TIME_IN_MS)) {
+		digitalWrite(
+		  MQTT_PIN_LED_FEEDBACK, 
+		  last_state_blink_mqtt_led = !last_state_blink_mqtt_led
+	  );
+		last_millis_blink_mqtt_led = millis();
+	}
+		
 	digitalWrite(WIFI_PIN_LED_FEEDBACK, wiFiConnection.connected());
 
 	delay(50);

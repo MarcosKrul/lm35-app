@@ -26,6 +26,7 @@
 #define LCD_ENABLED 15
 #define LCD_ROWS 2
 #define LCD_COLUMNS 16
+#define LCD_DISPLAY_VALUES_IN_MS 1000
 
 #define GET_CELSIUS_BY_RAW_VALUE(value) (value * 5.0 / (pow(2, ADC_RESOLUTION)-1)) / 0.01
 
@@ -38,6 +39,7 @@ float analogReadFromLM35 = -1;
 byte publish_lm35_data = 1;
 byte last_state_blink_mqtt_led = 1;
 unsigned long last_millis_blink_mqtt_led = millis();
+unsigned long last_displayed_from_lcd = millis();
 const char* title_temp = "Temp: ";
 const char* title_analog = "Analog: ";
 
@@ -92,13 +94,17 @@ void loop() {
   analogReadFromLM35 = analogRead(PIN_LM35);
 	tempConverted = GET_CELSIUS_BY_RAW_VALUE(analogReadFromLM35);
 
-	lcd.setCursor(length_char(title_temp), 0);
-	lcd.print(tempConverted, 1);
-	lcd.write((byte) 0);
-	lcd.print("C ");
-	
-	lcd.setCursor(length_char(title_analog), 1);
-	lcd.print(analogReadFromLM35, 1);
+	if (millis() > (last_displayed_from_lcd + LCD_DISPLAY_VALUES_IN_MS)) {
+		lcd.setCursor(length_char(title_temp), 0);
+		lcd.print(tempConverted, 1);
+		lcd.write((byte) 0);
+		lcd.print("C ");
+		
+		lcd.setCursor(length_char(title_analog), 1);
+		lcd.print(analogReadFromLM35, 1);
+
+		last_displayed_from_lcd = millis();
+	}
 
 	if (!wiFiConnection.connected()) wiFiConnection.reconnect();
 	else 

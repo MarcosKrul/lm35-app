@@ -1,4 +1,5 @@
 #include <PubSubClient.h>
+#include <LiquidCrystal.h>
 #include <WiFiConnection.h>
 
 #define ADC_RESOLUTION 10
@@ -13,21 +14,62 @@
 #define MQTT_SECRET_HASH "MQTT_SECRET_HASH_HERE"
 #define MQTT_MAX_LM35_JSON_LENGTH 50
 
+#define LCD_RS 0
+#define LCD_DB4 13
+#define LCD_DB5 12
+#define LCD_DB6 14
+#define LCD_DB7 16
+#define LCD_ENABLED 15
+#define LCD_ROWS 2
+#define LCD_COLUMNS 16
+
 #define GET_CELSIUS_BY_RAW_VALUE(value) (value * 5.0 / (pow(2, ADC_RESOLUTION)-1)) / 0.01
 
 void publishLM35Json();
+byte length_char(const void*);
 void onMQTTMessageCallback(char*,byte*,unsigned int);
 
 float tempConverted = -1;
 float analogReadFromLM35 = -1;
+const char* title_temp = "Temp: ";
+const char* title_analog = "Analog: ";
 
 WiFiClient wiFiClient;
 PubSubClient mqttClient(wiFiClient);
 WiFiConnection wiFiConnection = WiFiConnection(WIFI_SSID, WIFI_PASSWORD);
 
+LiquidCrystal lcd(
+	LCD_RS,
+	LCD_ENABLED,
+	LCD_DB4,
+	LCD_DB5,
+	LCD_DB6,
+	LCD_DB7
+);
+
+byte custom_degrees_char[8] = {
+	0b00000110,
+	0b00001001,
+	0b00001001,
+	0b00000110,
+	0b00000000,
+	0b00000000,
+	0b00000000,
+	0b00000000,
+};
+
 void setup() {
 	Serial.begin(9600);
 	randomSeed(analogRead(A0));
+
+	lcd.begin(LCD_COLUMNS, LCD_ROWS);
+	lcd.createChar(0, custom_degrees_char);
+
+	lcd.setCursor(0, 0);
+	lcd.print(title_temp);
+	
+	lcd.setCursor(0, 1);
+	lcd.print(title_analog);
 
   pinMode(PIN_LM35, INPUT);
   
@@ -42,6 +84,14 @@ void loop() {
 
   analogReadFromLM35 = analogRead(PIN_LM35);
 	tempConverted = GET_CELSIUS_BY_RAW_VALUE(analogReadFromLM35);
+
+	lcd.setCursor(length_char(title_temp), 0);
+	lcd.print(tempConverted, 1);
+	lcd.write((byte) 0);
+	lcd.print("C ");
+	
+	lcd.setCursor(length_char(title_analog), 1);
+	lcd.print(analogReadFromLM35, 1);
 
 	if (!wiFiConnection.connected()) wiFiConnection.reconnect();
 	else 
@@ -86,4 +136,9 @@ void onMQTTMessageCallback(char* topic, byte* payload, unsigned int size) {
   }
 
   Serial.println();
+}
+
+byte length_char(const void* content) {
+  String str = (const char*) content;
+  return str.length();
 }

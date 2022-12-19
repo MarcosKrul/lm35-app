@@ -1,0 +1,20 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model LM35Data {
+  id        Int      @id @default(autoincrement())
+  timestamp DateTime @db.Timestamp()
+  temp      Float    @db.DoublePrecision
+  analog    Int      @db.Integer
+
+  @@map("lm35_data")
+}

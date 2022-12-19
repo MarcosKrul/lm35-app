@@ -1,5 +1,5 @@
 interface IBaseMQTTService {
-  cb: (payload: Buffer) => void;
+  cb: (payload: Buffer) => Promise<void>;
 }
 
 export { IBaseMQTTService };

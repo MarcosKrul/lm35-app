@@ -35,7 +35,8 @@
       "@common/*": ["./src/common/*"],
       "@services/*": ["./src/services/*"],
       "@containers/*": ["./src/containers/*"],
-      "@repositories/*": ["./src/repositories/*"]
+      "@repositories/*": ["./src/repositories/*"],
+      "@providers/*": ["./src/providers/*"]
     }
   }
 }

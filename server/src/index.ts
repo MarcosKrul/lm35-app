@@ -24,7 +24,7 @@ try {
       cb: container.resolve(HandleLM35ReceivedDataService).cb,
     },
   });
-} catch (e) {
+} catch (e: any) {
   if (e instanceof AppError) logger.error(e.message);
-  else logger.error("Unknown error on MQTT message callback");
+  else logger.error(`Unknown error on MQTT message callback: ${e.message}`);
 }

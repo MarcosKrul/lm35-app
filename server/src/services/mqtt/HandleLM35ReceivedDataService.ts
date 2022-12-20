@@ -8,13 +8,16 @@ import { transaction } from "@infra/database/transaction";
 import { logger } from "@infra/log";
 import { IBaseMQTTService } from "@infra/mqtt";
 import { LM35Data } from "@prisma/client";
+import { IDateProvider } from "@providers/date";
 import { ILM35DataRepository } from "@repositories/LM35Data";
 
 @injectable()
 class HandleLM35ReceivedDataService implements IBaseMQTTService {
   constructor(
     @inject("LM35DataRepository")
-    private lm35DataRepository: ILM35DataRepository
+    private lm35DataRepository: ILM35DataRepository,
+    @inject("DateProvider")
+    private dateProvider: IDateProvider
   ) {}
 
   cb = async (payload: Buffer): Promise<void> => {
@@ -56,13 +59,11 @@ class HandleLM35ReceivedDataService implements IBaseMQTTService {
       ),
     });
 
-    const now = new Date();
-
     await transaction([
       this.lm35DataRepository.save({
         temp,
         analog,
-        timestamp: now,
+        timestamp: this.dateProvider.now(),
       } as LM35Data),
     ]);
 

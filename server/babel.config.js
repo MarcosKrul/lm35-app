@@ -20,6 +20,7 @@ module.exports = {
         "@services": "./src/services",
         "@containers": "./src/containers",
         "@repositories": "./src/repositories",
+        "@providers": "./src/providers",
       }}
     ],
   ],

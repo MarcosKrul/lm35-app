@@ -39,6 +39,32 @@ export const styles = StyleSheet.create({
   toggle: {
     color: '#FFF',
   },
+  conv: {
+    color: '#FFF',
+    borderRadius: 15,
+    height: 30,
+    width: 30,
+    padding: 5,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  convContainer: {
+    display: 'flex',
+    flex: 0.3,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: 60,
+  },
+  convSelected: {
+    backgroundColor: '#FFF',
+    borderRadius: 15,
+    height: 30,
+    width: 30,
+    padding: 5,
+    color: colors.PRIMARY,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   valuesContainer: {
     display: 'flex',
     justifyContent: 'center',

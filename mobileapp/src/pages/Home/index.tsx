@@ -1,5 +1,5 @@
 import { Picker } from '@react-native-picker/picker';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useMqtt } from '../../hooks/mqtt';
 import { styles } from './styles';
@@ -10,6 +10,7 @@ const Home = (): JSX.Element => {
   const [tempValue, setTempValue] = useState<string>('0');
   const [brokerStopped, setBrokerStopped] = useState<boolean>(false);
   const [freqValue, setFreqValue] = useState<string>('1000.0');
+  const [analogConverter, setAnalogConverter] = useState<number>(3.3);
 
   useEffect(() => {
     subscribe('/mqtt/engcomp/lm35/0a6e2389ec3fecd2a8068a0097ef5f96/diffusion', {
@@ -36,8 +37,12 @@ const Home = (): JSX.Element => {
     }
   }, [payload]);
 
-  const getRawValue = (analog: number): string =>
-    `${((analog * 5.0) / 1024).toFixed(2)}`;
+  const getRawValue = useCallback(
+    (analog: number): string => {
+      return `${((analog * analogConverter) / 1024).toFixed(2)}`;
+    },
+    [analogConverter],
+  );
 
   const toggleMessages = (): void => {
     publish(
@@ -63,6 +68,23 @@ const Home = (): JSX.Element => {
       contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <Text style={styles.welcome}>Bem-vindo</Text>
+        <View style={styles.convContainer}>
+          <TouchableOpacity onPress={() => setAnalogConverter(3.3)}>
+            <Text
+              style={analogConverter === 5 ? styles.conv : styles.convSelected}>
+              3.3
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setAnalogConverter(5)}>
+            <Text
+              style={
+                analogConverter === 3.3 ? styles.conv : styles.convSelected
+              }>
+              5
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity onPress={toggleMessages}>
           <Text style={styles.toggle}>
@@ -92,7 +114,7 @@ const Home = (): JSX.Element => {
         </View>
         <View style={styles.analogContainer}>
           <Text style={styles.analogLabel}>Valor analógico</Text>
-          <Text style={styles.value}>{`${analogValue}`}</Text>
+          <Text style={styles.value}>{`${analogValue.split('.')[0]}`}</Text>
         </View>
         <View style={styles.tempContainer}>
           <Text style={styles.tempLabel}>Temperatura</Text>

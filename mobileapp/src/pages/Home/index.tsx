@@ -1,6 +1,6 @@
 import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useMqtt } from '../../hooks/mqtt';
 import { styles } from './styles';
 
@@ -58,7 +58,9 @@ const Home = (): JSX.Element => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <Text style={styles.welcome}>Bem-vindo</Text>
 
@@ -69,16 +71,19 @@ const Home = (): JSX.Element => {
         </TouchableOpacity>
       </View>
       <View style={styles.valuesContainer}>
-        <Picker
-          style={styles.picker}
-          selectedValue={freqValue}
-          onValueChange={itemValue => selectFreq(itemValue)}>
-          <Picker.Item label="Instantâneo" value="0" />
-          <Picker.Item label="1 segundo" value="1000.0" />
-          <Picker.Item label="2 segundos" value="2000.0" />
-          <Picker.Item label="5 segundos" value="5000.0" />
-          <Picker.Item label="10 segundos" value="10000.0" />
-        </Picker>
+        <View style={styles.pickerContainer}>
+          <Text style={styles.pickerLabel}>Frequência</Text>
+          <Picker
+            style={styles.picker}
+            selectedValue={freqValue}
+            onValueChange={itemValue => selectFreq(itemValue)}>
+            <Picker.Item label="Instantâneo" value="0" />
+            <Picker.Item label="1 segundo" value="1000.0" />
+            <Picker.Item label="2 segundos" value="2000.0" />
+            <Picker.Item label="5 segundos" value="5000.0" />
+            <Picker.Item label="10 segundos" value="10000.0" />
+          </Picker>
+        </View>
         <View style={styles.analogContainer}>
           <Text style={styles.analogLabel}>Valor de tensão</Text>
           <Text style={styles.value}>{`${getRawValue(
@@ -94,7 +99,7 @@ const Home = (): JSX.Element => {
           <Text style={styles.value}>{`${tempValue} °C`}</Text>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

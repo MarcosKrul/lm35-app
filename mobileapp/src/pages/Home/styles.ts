@@ -26,6 +26,16 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
     marginHorizontal: 10,
   },
+  pickerContainer: {
+    position: 'relative',
+  },
+  pickerLabel: {
+    position: 'absolute',
+    top: -10,
+    left: 20,
+    zIndex: 999,
+    color: colors.PRIMARY,
+  },
   toggle: {
     color: '#FFF',
   },

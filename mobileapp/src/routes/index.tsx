@@ -11,7 +11,7 @@ const mqttProps: { brokerUrl: string; options: IClientOptions } = {
     port: 8000,
     protocol: 'ws' as 'ws',
     host: 'broker.mqtt-dashboard.com',
-    clientId: `Wagner-${Math.floor(Math.random() * 100)}`,
+    clientId: `LM35-${Math.floor(Math.random() * 100)}`,
     will: {
       topic: 'WillMsg',
       payload: 'Connection Closed abnormally..!',

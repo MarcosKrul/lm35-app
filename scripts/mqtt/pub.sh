@@ -12,4 +12,4 @@ mosquitto_pub \
  -h ${HOST} \
  -p ${PORT} \
  -t ${TOPIC} \
- -m "$now"
+ -m "{\"analog\": \"1024\",\"temp\":\"25.2\"}"

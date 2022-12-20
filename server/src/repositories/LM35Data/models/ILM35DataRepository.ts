@@ -1,7 +1,7 @@
-import { PrismaPromise } from "@prisma/client";
+import { LM35Data, PrismaPromise } from "@prisma/client";
 
 interface ILM35DataRepository {
-  save(): PrismaPromise<any>;
+  save(data: Exclude<LM35Data, "id">): PrismaPromise<LM35Data>;
 }
 
 export { ILM35DataRepository };

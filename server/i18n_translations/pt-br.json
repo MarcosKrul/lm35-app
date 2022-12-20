@@ -1,3 +1,6 @@
 {
-  "ErrorMissingEnvVar": "Não foi possível recuperar informações internas necessárias."
+  "ErrorMissingEnvVar": "Não foi possível recuperar informações internas necessárias.",
+  "MQTTErrorPayloadEmpty": "Tentativa de registro de objeto vazio via MQTT no recurso: {0}.",
+  "MQTTErrorNullOrEmptyValues": "Tentativa de registro com informações vazias via MQTT no recurso: {0}.",
+  "MQTTErrorValueIsNotNumber": "Tentativa de registro de valor não numérico via MQTT no recurso: {0}."
 }

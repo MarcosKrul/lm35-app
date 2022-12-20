@@ -37,8 +37,8 @@ const Routes = (): JSX.Element => {
   if (loading || !mqttProps) {
     return (
       <View style={styles.container}>
-        <Text style={styles.subtitle}>O próprio original</Text>
-        <ActivityIndicator style={styles.loading} size="large" color={'#000'} />
+        <Text style={styles.title}>LM35-APP</Text>
+        <ActivityIndicator style={styles.loading} size="large" color={'#FFF'} />
       </View>
     );
   }
@@ -55,15 +55,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.prussianBlue,
+    backgroundColor: colors.PRIMARY,
   },
   title: {
-    fontSize: 64,
-    color: colors.cgBlue,
+    fontSize: 52,
+    color: '#FFF',
   },
   subtitle: {
     fontSize: 22,
-    color: colors.sapphireBlue,
+    color: '#FFF',
   },
   loading: {
     paddingTop: 20,

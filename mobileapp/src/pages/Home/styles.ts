@@ -4,7 +4,7 @@ import { colors } from '../../global/colors';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.prussianBlue,
+    backgroundColor: colors.PRIMARY,
     position: 'relative',
   },
   welcome: {

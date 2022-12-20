@@ -9,7 +9,7 @@ const Home = (): JSX.Element => {
   const [analogValue, setAnalogValue] = useState<string>('0');
   const [tempValue, setTempValue] = useState<string>('0');
   const [brokerStopped, setBrokerStopped] = useState<boolean>(false);
-  const [freqValue, setFreqValue] = useState<string>('0');
+  const [freqValue, setFreqValue] = useState<string>('1000.0');
 
   useEffect(() => {
     subscribe('/mqtt/engcomp/lm35/0a6e2389ec3fecd2a8068a0097ef5f96/diffusion', {

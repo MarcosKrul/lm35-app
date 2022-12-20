@@ -1,3 +1,7 @@
+import "reflect-metadata";
+import "express-async-errors";
+import "@containers/index";
+
 import { container } from "tsyringe";
 
 import { TopicsMQTT } from "@common/TopicsMQTT";

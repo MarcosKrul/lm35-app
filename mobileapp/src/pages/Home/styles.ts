@@ -21,6 +21,11 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  picker: {
+    backgroundColor: '#dedede',
+    marginBottom: 10,
+    marginHorizontal: 10,
+  },
   toggle: {
     color: '#FFF',
   },
@@ -29,7 +34,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'stretch',
     height: '100%',
-    paddingVertical: 20,
+    paddingBottom: 20,
+    paddingTop: 10,
   },
   tempContainer: {
     display: 'flex',

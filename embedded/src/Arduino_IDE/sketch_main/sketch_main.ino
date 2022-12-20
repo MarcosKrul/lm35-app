@@ -17,6 +17,7 @@
 
 #define MQTT_TOPIC_LM35_DATA "/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/diffusion"
 #define MQTT_TOPIC_CONTROL_TOGGLE "/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/control/toggle"
+#define MQTT_TOPIC_CONTROL_CHANGE_FREQUENCY "/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/control/frequency"
 
 #define LCD_RS 0
 #define LCD_DB4 13
@@ -40,6 +41,8 @@ byte publish_lm35_data = 1;
 byte last_state_blink_mqtt_led = 1;
 unsigned long last_millis_blink_mqtt_led = millis();
 unsigned long last_displayed_from_lcd = millis();
+unsigned long last_publish_lm35data = millis();
+unsigned long time_to_publish = 0;
 const char* title_temp = "Temp: ";
 const char* title_analog = "Analog: ";
 
@@ -111,11 +114,15 @@ void loop() {
 		if (!mqttClient.connected()) {
 			mqttClient.connect("__MQTTClientId LM35-app" + random(300));
 			mqttClient.subscribe(MQTT_TOPIC_CONTROL_TOGGLE);
+			mqttClient.subscribe(MQTT_TOPIC_CONTROL_CHANGE_FREQUENCY);
 		}
-		else if (publish_lm35_data) publishLM35Json(); 
+		else if (publish_lm35_data && millis() > (last_publish_lm35data + time_to_publish)) {
+			publishLM35Json();
+			last_publish_lm35data = millis(); 
+		}
   
 	mqttClient.loop();
-	wiFiConnection.printStatus();
+	//wiFiConnection.printStatus();
 
 	if (!mqttClient.connected())
 		digitalWrite(MQTT_PIN_LED_FEEDBACK, LOW);
@@ -153,8 +160,15 @@ void onMQTTMessageCallback(char* topic, byte* payload, unsigned int size) {
   Serial.println("MQTT Client received message at: ");
   Serial.print(topic);
 
-	if (strcmp(topic, MQTT_TOPIC_CONTROL_TOGGLE) == 0)
+	if (strcmp(topic, MQTT_TOPIC_CONTROL_TOGGLE) == 0) {
 		publish_lm35_data = !publish_lm35_data;
+		return;
+	}
+
+	if (strcmp(topic, MQTT_TOPIC_CONTROL_CHANGE_FREQUENCY) == 0) {
+		time_to_publish = atol((char*) payload);
+		return;
+	}
 
   Serial.print(" / Message: ");
   for (int i = 0; i < size; i++) {

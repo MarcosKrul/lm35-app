@@ -59,10 +59,21 @@ class HandleLM35ReceivedDataService implements IBaseMQTTService {
       ),
     });
 
+    const milliVolts = toNumber({
+      value: json.milliVolts,
+      error: new AppError(
+        "INTERNAL_SERVER_ERROR",
+        i18n.__mf("MQTTErrorValueIsNotNumber", [
+          "armazenamento de informações do sensor LM35",
+        ])
+      ),
+    });
+
     await transaction([
       this.lm35DataRepository.save({
         temp,
         analog,
+        milliVolts,
         timestamp: this.dateProvider.now(),
       } as LM35Data),
     ]);

@@ -11,10 +11,11 @@ datasource db {
 }
 
 model LM35Data {
-  id        Int      @id @default(autoincrement())
-  timestamp DateTime @db.Timestamp()
-  temp      Float    @db.DoublePrecision
-  analog    Int      @db.Integer
+  id         Int      @id @default(autoincrement())
+  timestamp  DateTime @db.Timestamp()
+  temp       Float    @db.DoublePrecision
+  milliVolts Float    @db.DoublePrecision
+  analog     Int      @db.Integer
 
   @@map("lm35_data")
 }

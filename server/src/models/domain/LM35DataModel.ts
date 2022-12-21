@@ -3,6 +3,7 @@ type LM35DataModel = {
   timestamp: Date;
   temp: number;
   analog: number;
+  milliVolts: number;
 };
 
 export { LM35DataModel };

@@ -9,12 +9,14 @@ class LM35DataRepository implements ILM35DataRepository {
     analog,
     temp,
     timestamp,
+    milliVolts,
   }: Exclude<LM35Data, "id">): PrismaPromise<LM35Data> =>
     this.prisma.lM35Data.create({
       data: {
         analog,
         temp,
         timestamp,
+        milliVolts,
       },
     });
 }

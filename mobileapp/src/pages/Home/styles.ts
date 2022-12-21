@@ -22,7 +22,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   picker: {
-    backgroundColor: '#dedede',
+    backgroundColor: '#ebebeb',
     marginBottom: 10,
     marginHorizontal: 10,
   },

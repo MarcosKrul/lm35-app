@@ -4,10 +4,17 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useMqtt } from '../../hooks/mqtt';
 import { styles } from './styles';
 
+type MessagePayload = {
+  milliVolts: string;
+  analog: string;
+  temp: string;
+};
+
 const Home = (): JSX.Element => {
   const { subscribe, unsubscribe, payload, publish } = useMqtt();
   const [analogValue, setAnalogValue] = useState<string>('0');
   const [tempValue, setTempValue] = useState<string>('0');
+  const [tensionValue, setTensionValue] = useState<string>('0');
   const [brokerStopped, setBrokerStopped] = useState<boolean>(false);
   const [freqValue, setFreqValue] = useState<string>('1000.0');
 
@@ -27,17 +34,16 @@ const Home = (): JSX.Element => {
   useEffect(() => {
     if (payload) {
       console.log(payload.toString());
-      const parsedValues: { temp: string; analog: string } = JSON.parse(
-        payload.toString(),
-      );
+      const parsedValues: MessagePayload = JSON.parse(payload.toString());
 
       setAnalogValue(prev => parsedValues.analog ?? prev);
       setTempValue(prev => parsedValues.temp ?? prev);
+      setTensionValue(
+        prev =>
+          `${(Number(parsedValues.milliVolts) / 1000).toFixed(3)}` ?? prev,
+      );
     }
   }, [payload]);
-
-  const getRawValue = (analog: number): string =>
-    `${((analog * 5.0) / 1024).toFixed(2)}`;
 
   const toggleMessages = (): void => {
     publish(
@@ -86,13 +92,11 @@ const Home = (): JSX.Element => {
         </View>
         <View style={styles.analogContainer}>
           <Text style={styles.analogLabel}>Valor de tensão</Text>
-          <Text style={styles.value}>{`${getRawValue(
-            Number(analogValue),
-          )} V`}</Text>
+          <Text style={styles.value}>{`${tensionValue} V`}</Text>
         </View>
         <View style={styles.analogContainer}>
           <Text style={styles.analogLabel}>Valor analógico</Text>
-          <Text style={styles.value}>{`${analogValue}`}</Text>
+          <Text style={styles.value}>{`${analogValue.split('.')[0]}`}</Text>
         </View>
         <View style={styles.tempContainer}>
           <Text style={styles.tempLabel}>Temperatura</Text>

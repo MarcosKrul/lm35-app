@@ -2,6 +2,8 @@
 #include <LiquidCrystal.h>
 #include <WiFiConnection.h>
 
+#define VOLTAGE_REF 3.3
+
 #define ADC_RESOLUTION 10
 
 #define PIN_LM35 A0
@@ -12,7 +14,7 @@
 #define MQTT_PORT MQTT_PORT_HERE
 #define MQTT_HOST "MQTT_HOST_HERE"
 #define MQTT_SECRET_HASH "MQTT_SECRET_HASH_HERE"
-#define MQTT_MAX_LM35_JSON_LENGTH 50
+#define MQTT_MAX_LM35_JSON_LENGTH 80
 #define MQTT_LED_BLINK_TIME_IN_MS 1000
 
 #define MQTT_TOPIC_LM35_DATA "/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/diffusion"
@@ -30,14 +32,14 @@
 #define LCD_DISPLAY_VALUES_IN_MS 1000
 #define LCD_FIRST_FREE_COLUMN 3
 
-#define GET_CELSIUS_BY_RAW_VALUE(value) (value * 5.0 / (pow(2, ADC_RESOLUTION)-1)) / 0.01
+#define GET_CELSIUS_BY_RAW_VALUE(value) (value * VOLTAGE_REF / (pow(2, ADC_RESOLUTION))) / 0.01
 
 void publishLM35Json();
 byte length_char(const void*);
 void onMQTTMessageCallback(char*,byte*,unsigned int);
 
 float tempConverted = -1;
-float analogReadFromLM35 = -1;
+int analogReadFromLM35 = -1;
 byte publish_lm35_data = 1;
 byte last_state_blink_mqtt_led = 1;
 unsigned long last_millis_blink_mqtt_led = millis();
@@ -175,8 +177,9 @@ void publishLM35Json() {
 
   sprintf(
     buffer,
-    "{\"temp\":\"%.2f\",\"analog\":\"%.2f\"}",
+    "{\"temp\":\"%.2f\",\"milliVolts\":\"%.2f\",\"analog\":\"%d\"}",
     tempConverted,
+		tempConverted * 10,
     analogReadFromLM35
   );
 

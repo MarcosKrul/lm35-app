@@ -78,7 +78,7 @@ class HandleLM35ReceivedDataService implements IBaseMQTTService {
       } as LM35Data),
     ]);
 
-    logger.info("MQTT objeto saved successfully.");
+    logger.info("MQTT object saved successfully.");
   };
 }
 export { HandleLM35ReceivedDataService };

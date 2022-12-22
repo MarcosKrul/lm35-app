@@ -33,7 +33,6 @@ const Home = (): JSX.Element => {
 
   useEffect(() => {
     if (payload) {
-      console.log(payload.toString());
       const parsedValues: MessagePayload = JSON.parse(payload.toString());
 
       setAnalogValue(prev => parsedValues.analog ?? prev);

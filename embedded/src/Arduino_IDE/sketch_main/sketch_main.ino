@@ -70,7 +70,7 @@ byte custom_temp_char[4][8] = {
 };
 
 void setup() {
-	Serial.begin(9600);
+	Serial.begin(115200);
 
 	lcd.begin(LCD_COLUMNS, LCD_ROWS);
 	lcd.createChar(0, custom_degrees_char);
@@ -110,6 +110,8 @@ void loop() {
 		last_displayed_from_lcd = millis();
 	}
 
+ sendLM35Data();
+
 	delay(50);
 }
 
@@ -123,6 +125,8 @@ void sendLM35Data() {
 		tempConverted * 10,
     analogReadFromLM35
   );
+
+	Serial.println(buffer);
 
   free(buffer);
 }

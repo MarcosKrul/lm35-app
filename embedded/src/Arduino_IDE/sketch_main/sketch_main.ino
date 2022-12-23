@@ -1,25 +1,12 @@
 #include <PubSubClient.h>
 #include <LiquidCrystal.h>
-#include <WiFiConnection.h>
 
 #define VOLTAGE_REF 3.3
 
 #define ADC_RESOLUTION 10
 
 #define PIN_LM35 A0
-
-#define MQTT_PIN_LED_FEEDBACK 4
-#define WIFI_PIN_LED_FEEDBACK 5
-
-#define MQTT_PORT MQTT_PORT_HERE
-#define MQTT_HOST "MQTT_HOST_HERE"
-#define MQTT_SECRET_HASH "MQTT_SECRET_HASH_HERE"
-#define MQTT_MAX_LM35_JSON_LENGTH 80
-#define MQTT_LED_BLINK_TIME_IN_MS 1000
-
-#define MQTT_TOPIC_LM35_DATA "/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/diffusion"
-#define MQTT_TOPIC_CONTROL_TOGGLE "/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/control/toggle"
-#define MQTT_TOPIC_CONTROL_CHANGE_FREQUENCY "/mqtt/engcomp/lm35/"MQTT_SECRET_HASH"/control/frequency"
+#define MAX_LM35_JSON_LENGTH 80
 
 #define LCD_RS 0
 #define LCD_DB4 13
@@ -34,24 +21,14 @@
 
 #define GET_CELSIUS_BY_RAW_VALUE(value) (value * VOLTAGE_REF / (pow(2, ADC_RESOLUTION))) / 0.01
 
-void publishLM35Json();
+void sendLM35Data();
 byte length_char(const void*);
-void onMQTTMessageCallback(char*,byte*,unsigned int);
 
 float tempConverted = -1;
 int analogReadFromLM35 = -1;
-byte publish_lm35_data = 1;
-byte last_state_blink_mqtt_led = 1;
-unsigned long last_millis_blink_mqtt_led = millis();
 unsigned long last_displayed_from_lcd = millis();
-unsigned long last_publish_lm35data = millis();
-unsigned long time_to_publish = 1000;
 const char* title_temp = "Temp: ";
 const char* title_analog = "Analog: ";
-
-WiFiClient wiFiClient;
-PubSubClient mqttClient(wiFiClient);
-WiFiConnection wiFiConnection = WiFiConnection(WIFI_SSID, WIFI_PASSWORD);
 
 LiquidCrystal lcd(
 	LCD_RS,
@@ -94,7 +71,6 @@ byte custom_temp_char[4][8] = {
 
 void setup() {
 	Serial.begin(9600);
-	randomSeed(analogRead(A0));
 
 	lcd.begin(LCD_COLUMNS, LCD_ROWS);
 	lcd.createChar(0, custom_degrees_char);
@@ -115,12 +91,6 @@ void setup() {
 	lcd.print(title_analog);
 
   pinMode(PIN_LM35, INPUT);
-  
-	pinMode(WIFI_PIN_LED_FEEDBACK, OUTPUT);
-	pinMode(MQTT_PIN_LED_FEEDBACK, OUTPUT);
-
-	mqttClient.setServer(MQTT_HOST, MQTT_PORT);
-  mqttClient.setCallback(onMQTTMessageCallback);
 }
 
 void loop() {
@@ -140,40 +110,11 @@ void loop() {
 		last_displayed_from_lcd = millis();
 	}
 
-	if (!wiFiConnection.connected()) wiFiConnection.reconnect();
-	else 
-		if (!mqttClient.connected()) {
-			mqttClient.connect("__MQTTClientId LM35-app" + random(300));
-			mqttClient.subscribe(MQTT_TOPIC_CONTROL_TOGGLE);
-			mqttClient.subscribe(MQTT_TOPIC_CONTROL_CHANGE_FREQUENCY);
-		}
-		else if (publish_lm35_data && millis() > (last_publish_lm35data + time_to_publish)) {
-			publishLM35Json();
-			last_publish_lm35data = millis(); 
-		}
-  
-	mqttClient.loop();
-	//wiFiConnection.printStatus();
-
-	if (!mqttClient.connected())
-		digitalWrite(MQTT_PIN_LED_FEEDBACK, LOW);
-	else if (publish_lm35_data) 
-		digitalWrite(MQTT_PIN_LED_FEEDBACK, HIGH);
-	else if (millis() > (last_millis_blink_mqtt_led + MQTT_LED_BLINK_TIME_IN_MS)) {
-		digitalWrite(
-		  MQTT_PIN_LED_FEEDBACK, 
-		  last_state_blink_mqtt_led = !last_state_blink_mqtt_led
-	  );
-		last_millis_blink_mqtt_led = millis();
-	}
-		
-	digitalWrite(WIFI_PIN_LED_FEEDBACK, wiFiConnection.connected());
-
 	delay(50);
 }
 
-void publishLM35Json() {
-  char* buffer = (char*) malloc(MQTT_MAX_LM35_JSON_LENGTH * sizeof(char));
+void sendLM35Data() {
+  char* buffer = (char*) malloc(MAX_LM35_JSON_LENGTH * sizeof(char));
 
   sprintf(
     buffer,
@@ -183,31 +124,7 @@ void publishLM35Json() {
     analogReadFromLM35
   );
 
-	mqttClient.publish(MQTT_TOPIC_LM35_DATA, buffer);
-
   free(buffer);
-}
-
-void onMQTTMessageCallback(char* topic, byte* payload, unsigned int size) {
-  Serial.println("MQTT Client received message at: ");
-  Serial.print(topic);
-
-	if (strcmp(topic, MQTT_TOPIC_CONTROL_TOGGLE) == 0) {
-		publish_lm35_data = !publish_lm35_data;
-		return;
-	}
-
-	if (strcmp(topic, MQTT_TOPIC_CONTROL_CHANGE_FREQUENCY) == 0) {
-		time_to_publish = atol((char*) payload);
-		return;
-	}
-
-  Serial.print(" / Message: ");
-  for (int i = 0; i < size; i++) {
-    Serial.print((char) payload[i]);
-  }
-
-  Serial.println();
 }
 
 byte length_char(const void* content) {

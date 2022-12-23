@@ -22,11 +22,14 @@
 #define GET_CELSIUS_BY_RAW_VALUE(value) (value * VOLTAGE_REF / (pow(2, ADC_RESOLUTION))) / 0.01
 
 void sendLM35Data();
+void uart_receive();
 byte length_char(const void*);
 
 float tempConverted = -1;
 int analogReadFromLM35 = -1;
 unsigned long last_displayed_from_lcd = millis();
+unsigned int seconds_to_wait_and_publish = 1;
+unsigned long last_publish = millis();
 const char* title_temp = "Temp: ";
 const char* title_analog = "Analog: ";
 
@@ -110,7 +113,12 @@ void loop() {
 		last_displayed_from_lcd = millis();
 	}
 
- sendLM35Data();
+	if (millis() > (seconds_to_wait_and_publish * 1000 + last_publish)) {
+  	sendLM35Data();
+		last_publish = millis();
+	}
+
+  uart_receive();
 
 	delay(50);
 }
@@ -134,4 +142,10 @@ void sendLM35Data() {
 byte length_char(const void* content) {
   String str = (const char*) content;
   return str.length();
+}
+
+void uart_receive()
+{
+  if (Serial.available())
+    seconds_to_wait_and_publish = Serial.read() - '0';
 }

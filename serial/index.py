@@ -8,6 +8,11 @@ PORT = "COM8"
 
 def exec():
   try:
+    ser = serial.Serial(PORT, 115200)
+  except:
+    print(f"Error open communication at {PORT}")
+
+  try:
     def on_connect(client, userdata, flags, rc):
       print(
         "MQTT Connected" if rc == 0 
@@ -19,7 +24,7 @@ def exec():
         global publish
         publish = not publish
       elif msg.topic == MQTT_TOPIC_CONTROL_CHANGE_FREQUENCY:
-        print(msg.payload.decode())
+        ser.write(msg.payload.decode().encode())
 
     client = mqtt_client.Client(f'engcomp/lm35app-{random.randint(0, 1000)}')
     client.on_connect = on_connect
@@ -37,14 +42,10 @@ def exec():
   except:
     print(f'Error at MQTT client handling')
   
-  try:
-    with serial.Serial(PORT, 115200) as ser:
-      while True:
-        message = ser.readline().decode().rstrip('\n')
-        if len(message) != 0 and publish:
-          client.publish(MQTT_TOPIC_LM35_DATA, message)
-  except:
-    print(f"Error open communication at {PORT}")
+  while True:
+    message = ser.readline().decode().rstrip('\n')
+    if len(message) != 0 and publish:
+      client.publish(MQTT_TOPIC_LM35_DATA, message)
 
 if __name__ == '__main__':
   load_dotenv()

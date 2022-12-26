@@ -1,5 +1,3 @@
-#include <PubSubClient.h>
-
 #define VOLTAGE_REF 3.3
 
 #define ADC_RESOLUTION 10
@@ -8,6 +6,7 @@
 #define MAX_LM35_JSON_LENGTH 80
 
 #define GET_CELSIUS_BY_RAW_VALUE(value) (value * VOLTAGE_REF / (pow(2, ADC_RESOLUTION)-1)) / 0.01
+#define ANALOG_READ(pin) map(analogRead(pin), 16, 1024, 0, 1024)
 
 void sendLM35Data();
 void uart_receive();
@@ -27,7 +26,7 @@ void setup() {
 
 void loop() {
 
-  analogReadFromLM35 = map(analogRead(PIN_LM35), 14, 1024, 0, 1024);
+  analogReadFromLM35 = ANALOG_READ(PIN_LM35);
 	tempConverted = GET_CELSIUS_BY_RAW_VALUE(analogReadFromLM35);
 
 	if (millis() > (seconds_to_wait_and_publish * 1000 + last_publish)) {

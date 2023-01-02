@@ -16,7 +16,7 @@ const Home = (): JSX.Element => {
   const [tempValue, setTempValue] = useState<string>('0');
   const [tensionValue, setTensionValue] = useState<string>('0');
   const [brokerStopped, setBrokerStopped] = useState<boolean>(false);
-  const [freqValue, setFreqValue] = useState<string>('1000.0');
+  const [freqValue, setFreqValue] = useState<string>('1');
 
   useEffect(() => {
     subscribe('/mqtt/engcomp/lm35/0a6e2389ec3fecd2a8068a0097ef5f96/diffusion', {
@@ -83,10 +83,9 @@ const Home = (): JSX.Element => {
             selectedValue={freqValue}
             onValueChange={itemValue => selectFreq(itemValue)}>
             <Picker.Item label="Instantâneo" value="0" />
-            <Picker.Item label="1 segundo" value="1000.0" />
-            <Picker.Item label="2 segundos" value="2000.0" />
-            <Picker.Item label="5 segundos" value="5000.0" />
-            <Picker.Item label="10 segundos" value="10000.0" />
+            <Picker.Item label="1 segundo" value="1" />
+            <Picker.Item label="2 segundos" value="2" />
+            <Picker.Item label="5 segundos" value="5" />
           </Picker>
         </View>
         <View style={styles.analogContainer}>
